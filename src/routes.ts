@@ -16,7 +16,7 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
 
   app.post<{
     Params: { toolName: string };
-    Body: { arguments?: Record<string, unknown> };
+    Body: { input?: Record<string, unknown>; arguments?: Record<string, unknown> };
   }>('/tools/:toolName/invoke', { preHandler: requireAuth }, async (request, reply) => {
     if (!request.auth) {
       reply.code(401).send({ error: 'unauthenticated' });
@@ -24,7 +24,9 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     }
 
     const { toolName } = request.params;
-    const args = request.body?.arguments ?? {};
+    // Accept either `input` (preferred, matches chat route spec) or `arguments`
+    // (back-compat for any earlier callers).
+    const args = request.body?.input ?? request.body?.arguments ?? {};
     const result = await invokeTool(toolName, args, request.auth);
 
     if (!result.ok && result.error === 'unknown_tool') {
