@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: progear-mcp-a2a
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: OKTA_ISSUER
+        value: https://bala-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7
+      - key: OKTA_AUDIENCE
+        value: https://progear.com/inventoryMCP-resource
